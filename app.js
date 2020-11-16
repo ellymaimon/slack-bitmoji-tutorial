@@ -24,8 +24,6 @@ const getRandomBitmojiURL = async () => {
 
 app.event('message', async ({ event, client }) => {
 	try {
-		const bitmojiURL = process.env.BITMOJI_EXAMPLE_URL;
-
 		if (
 			event.channel_type === 'im' &&
 			event.user !== process.env.SLACK_USER_ID &&
@@ -34,6 +32,8 @@ app.event('message', async ({ event, client }) => {
 			const { presence } = await client.users.getPresence({ user: process.env.SLACK_USER_ID });
 
 			if (presence === 'away') {
+				const bitmojiURL = await getRandomBitmojiURL();
+
 				client.chat.postMessage({
 					token: process.env.SLACK_USER_TOKEN,
 					channel: event.channel,
