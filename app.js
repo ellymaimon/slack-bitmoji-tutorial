@@ -7,6 +7,21 @@ const app = new App({
 	signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
+const getRandomBitmojiURL = async () => {
+	const database = new faunadb.Client({ secret: process.env.APP_DB_KEY });
+	const q = faunadb.query;
+	const { data } = await database.query(
+		q.Map(
+			q.Paginate(q.Documents(q.Collection('bitmojis'))),
+			q.Lambda(x => q.Get(x))
+		)
+	);
+	const randomIndex = Math.floor(Math.random() * data.length);
+	const randomBitmojiURL = data[ randomIndex ].data.url;
+
+	return randomBitmojiURL;
+}
+
 app.event('message', async ({ event, client }) => {
 	try {
 		const bitmojiURL = process.env.BITMOJI_EXAMPLE_URL;
